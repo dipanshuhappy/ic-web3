@@ -91,6 +91,7 @@ impl ICHttpClient {
 
     pub async fn post(&self, url: String, payload: &Request, max_resp: Option<u64>, cycles: Option<u64>) -> Result<Vec<u8>, String> {
         let idempotency_key = fastrand::i32(..);
+        ic_cdk::println!("idempotency_key: {}", idempotency_key);
         let request_headers = vec![
             HttpHeader {
                 name: "Content-Type".to_string(),
