@@ -9,6 +9,7 @@ use ic_cdk::api::management_canister::http_request::{
     HttpResponse, http_request,
     TransformFunc, TransformContext, 
 };
+use fastrand;
 
 // #[derive(CandidType, Deserialize, Debug)]
 // pub struct CanisterHttpRequestArgs {
@@ -89,13 +90,18 @@ impl ICHttpClient {
     }
 
     pub async fn post(&self, url: String, payload: &Request, max_resp: Option<u64>, cycles: Option<u64>) -> Result<Vec<u8>, String> {
+        let idempotency_key = fastrand::i32(..);
         let request_headers = vec![
             HttpHeader {
                 name: "Content-Type".to_string(),
                 value: "application/json".to_string(),
-            },
-        ];
 
+            },
+            HttpHeader {
+                name:"idempotency".to_string(),
+                value: idempotency_key.to_string(),
+            }
+        ];
         self.request(url, HttpMethod::POST, request_headers, payload, max_resp, cycles).await
     }
 }
